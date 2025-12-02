@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function getData() {
+    fetch("http://www.cc.puv.fi/~e2403004/record.txt")
+        .then(r => r.text())
+        .then(data => {
+            dispData(data);
+            drawChart(data);
+        });
+}
+
+function dispData(data) {
+    var p = document.getElementById("text");
+    var a = data.split('\n');
+    p.innerHTML = "";
+    for (var i = 0; i < a.length; i++) {
+        if (a[i].trim() !== "") p.innerHTML += a[i] + "<br>";
+    }
+}
+
+function drawChart(data) {
+    let lines = data.trim().split('\n');
+
+    let labels = [];
+    let v1 = [];
+    let v2 = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        let parts = lines[i].split(',');
+        labels.push("Row" + (i + 1));
+
+        let n1 = parseInt(parts[1]);   // 2nd value
+        let n2 = parseInt(parts[2]);   // 3rd value
+
+        v1.push(isNaN(n1) ? null : n1);
+        v2.push(isNaN(n2) ? null : n2);
+    }
+
+    new Chart(document.getElementById("myChart"), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Value 1',
+                    data: v1
+                },
+                {
+                    label: 'Value 2',
+                    data: v2
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+</script>
+</head>
+<body bgcolor="LightGreen" onload="getData()">
+<p id="text">Welcome to APPDEV</p>
+<canvas id="myChart" width="400" height="200"></canvas>
+</body>
+</html>
